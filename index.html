@@ -231,6 +231,15 @@
   .fade-in {
     animation: fadeIn 0.3s ease-in-out;
   }
+
+  #drop-btn {
+    background-color: #ff6b6b;
+  }
+
+  #drop-btn:hover {
+    background-color: #ff8787;
+  }
+
 </style>
 </head>
 <body>
@@ -281,6 +290,7 @@
     <button class="control-btn" id="rotate-btn">&#8635;</button>
     <button class="control-btn" id="right-btn">&#8594;</button>
     <button class="control-btn" id="down-btn">&#8595;</button>
+    <button class="control-btn" id="drop-btn">&#8681;</button>
   </div>
 
 <script>
@@ -628,6 +638,11 @@ document.getElementById('down-btn').addEventListener('click', () => {
 });
 document.getElementById('rotate-btn').addEventListener('click', () => {
   if (gameActive) rotate();
+});
+
+// Drop button
+document.getElementById('drop-btn').addEventListener('click', () => {
+  if (gameActive) dropPiece();
 });
 
 // Menu button
