@@ -5,7 +5,7 @@
 <style>
   body {
     margin: 0;
-    padding: 20px;
+    padding: 10px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
     color: #ffffff;
@@ -22,10 +22,7 @@
     max-width: 300px;
     height: auto;
     aspect-ratio: 10 / 22;
-    border: 4px solid #e94560;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+    margin-bottom: 20px;
   }
 
   #game-board {
@@ -41,30 +38,28 @@
 
   #score, #timer, #moves {
     position: absolute;
-    right: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    right: 10px;
+    font-size: 16px;
   }
 
   #score {
-    top: 20px;
+    top: 10px;
   }
 
   #timer {
-    top: 60px;
+    top: 40px;
   }
 
   #moves {
-    top: 100px;
+    top: 70px;
   }
 
   #next-piece-container {
     position: absolute;
-    top: 110px;
-    right: 20px;
-    width: 100px;
-    height: 100px;
+    top: 100px;
+    right: 10px;
+    width: 80px;
+    height: 80px;
     border: 2px solid #e94560;
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.5);
@@ -74,16 +69,16 @@
   }
 
   #next-piece {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
   }
 
   #menu-btn {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    font-size: 18px;
+    top: 10px;
+    left: 10px;
+    padding: 8px 16px;
+    font-size: 16px;
     background-color: #4ECDC4;
     color: #ffffff;
     border: none;
@@ -159,31 +154,133 @@
   }
 
   #controls {
-    display: none;
+    position: relative;
+    display: flex; /* Always display controls on mobile */
+    flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     width: 100%;
     max-width: 300px;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .control-btn {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     padding: 0;
   }
 
   @media (max-width: 767px) {
+    body {
+      padding: 5px;
+    }
+
+    #game-container {
+      max-width: 100%;
+      max-height: 60vh; /* Reduced from 70vh to 60vh */
+    }
+
+    #score, #timer, #moves {
+      font-size: 12px; /* Reduced font size */
+      right: 5px; /* Moved slightly to the left */
+    }
+
+    #score {
+      top: 5px;
+    }
+
+    #timer {
+      top: 22px; /* Adjusted position */
+    }
+
+    #moves {
+      top: 39px; /* Adjusted position */
+    }
+
+    #next-piece-container {
+      top: 56px; /* Adjusted position */
+      right: 5px;
+      width: 50px; /* Reduced size */
+      height: 50px;
+    }
+
+    #next-piece {
+      width: 40px; /* Adjusted size */
+      height: 40px;
+    }
+
+    #menu-btn {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
     #controls {
-      display: flex;
+      margin-top: 5px; /* Reduced margin */
+    }
+
+    .control-btn {
+      width: 35px; /* Slightly smaller buttons */
+      height: 35px;
+      font-size: 14px;
+      margin: 5px;
     }
   }
 
-  @media (max-height: 800px) {
+  /* Add a new media query for very small screens */
+  @media (max-width: 320px) {
     #game-container {
-      max-height: 70vh;
+      max-height: 55vh;
     }
+
+    #controls {
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .control-btn {
+      width: 30px;
+      height: 30px;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+  }
+
+  /* Adjust the layout for landscape orientation */
+  @media (max-width: 767px) and (orientation: landscape) {
+    #game-container {
+      max-height: 80vh;
+      max-width: 50%;
+      float: left;
+    }
+
+    #controls {
+      float: right;
+      width: 45%;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .control-btn {
+      margin: 5px 0;
+    }
+  }
+
+  /* Fine-tune for larger screens */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    #game-container {
+      max-width: 80%;
+    }
+  }
+
+  /* Ensure full-screen menu on all devices */
+  .menu-content, .settings-content {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    box-sizing: border-box;
+    padding: 5%;
   }
 
   @keyframes fadeIn {
@@ -728,8 +825,18 @@ function resizeGame() {
   ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
   
   draw();
+
+  // Show controls on mobile devices
+  const controls = document.getElementById('controls');
+  if (window.innerWidth <= 767) {
+    controls.style.display = 'flex';
+  } else {
+    controls.style.display = 'none';
+  }
 }
 
+// Call resizeGame on page load and window resize
+window.addEventListener('load', resizeGame);
 window.addEventListener('resize', resizeGame);
 
 function update(time = 0) {
