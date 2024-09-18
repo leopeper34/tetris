@@ -14,13 +14,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden; /* Prevent scrolling on mobile */
   }
 
   #game-container {
     width: 100%;
-    max-width: 500px;
-    height: 90vh;
-    max-height: 900px;
+    height: calc(100vh - 70px); /* Adjust for controls */
+    max-height: none;
     position: relative;
     border: 4px solid #e94560;
     border-radius: 10px;
@@ -161,63 +161,128 @@
   }
 
   #controls {
-    position: absolute;
-    bottom: 2vw;
+    display: none; /* Hide by default */
+    position: fixed;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    gap: 2vw;
+    gap: 10px;
   }
 
   .control-btn {
-    width: 12vw;
-    height: 12vw;
-    font-size: 6vw;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    border-radius: 50%;
   }
 
-  @media (min-width: 768px) {
-    #score, #timer, #moves {
-      font-size: 24px;
-      right: 20px;
-    }
-
-    #score { top: 20px; }
-    #timer { top: 60px; }
-    #moves { top: 100px; }
-
-    #next-piece-container {
-      top: 140px;
-      right: 20px;
-      width: 100px;
-      height: 100px;
-    }
-
-    #menu-btn {
-      top: 20px;
-      left: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-    }
-
-    .menu-btn {
-      font-size: 1.5rem;
-      padding: 1rem;
-    }
-
-    #high-score {
-      font-size: 1.5rem;
-    }
-
+  @media (max-width: 767px) {
     #controls {
-      bottom: 10px;
-      gap: 10px;
+      display: flex; /* Show controls on mobile */
+    }
+
+    #game-container {
+      width: 100%;
+      height: calc(100vh - 70px); /* Adjust for controls */
+      max-height: none;
     }
 
     .control-btn {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       font-size: 20px;
     }
+
+    .menu-content, .settings-content {
+      width: 100%;
+      height: 100%;
+      padding: 5vw;
+    }
+
+    .menu-btn {
+      font-size: 4vw;
+      padding: 2vw;
+      width: 80%;
+      max-width: 300px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #game-container {
+      width: 60vw;
+      max-width: 500px;
+      height: 90vh;
+      max-height: 900px;
+      margin: auto;
+    }
+
+    .menu-content, .settings-content {
+      padding: 2vw;
+      width: 80%;
+      height: 80%;
+      max-width: 800px;
+      max-height: 600px;
+    }
+
+    .menu-content h1 {
+      font-size: 4rem;
+    }
+
+    .menu-btn {
+      font-size: 2rem;
+      padding: 1rem;
+      margin: 1rem auto;
+      width: 300px;
+    }
+
+    #high-score {
+      font-size: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #game-container {
+      width: 50vw;
+      max-width: 600px;
+      height: 80vh;
+      max-height: 800px;
+    }
+
+    .menu-content, .settings-content {
+      width: 70%;
+      height: 70%;
+      max-width: 1000px;
+      max-height: 800px;
+    }
+
+    .menu-content h1 {
+      font-size: 5rem;
+    }
+
+    .menu-btn {
+      font-size: 2.5rem;
+      width: 400px;
+    }
+
+    #high-score {
+      font-size: 2.5rem;
+    }
+  }
+
+  .overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .menu-content, .settings-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 </style>
 </head>
@@ -262,14 +327,14 @@
       <canvas id="next-piece"></canvas>
     </div>
     <button id="menu-btn">Menu</button>
+  </div>
 
-    <div id="controls">
-      <button class="control-btn" id="left-btn">&#8592;</button>
-      <button class="control-btn" id="rotate-btn">&#8635;</button>
-      <button class="control-btn" id="right-btn">&#8594;</button>
-      <button class="control-btn" id="down-btn">&#8595;</button>
-      <button class="control-btn" id="drop-btn">&#8681;</button>
-    </div>
+  <div id="controls">
+    <button class="control-btn" id="left-btn">&#8592;</button>
+    <button class="control-btn" id="rotate-btn">&#8635;</button>
+    <button class="control-btn" id="right-btn">&#8594;</button>
+    <button class="control-btn" id="down-btn">&#8595;</button>
+    <button class="control-btn" id="drop-btn">&#8681;</button>
   </div>
 
 <script>
