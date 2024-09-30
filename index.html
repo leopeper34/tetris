@@ -1,528 +1,787 @@
-<html><head><base href="https://websim.ai" />
-<title>NEON TETRIS</title>
-<style>
-  body {
-    font-family: 'Press Start 2P', cursive;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    overflow: hidden;
-  }
-  @keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-  }
-  .game-container {
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(255,255,255,0.3);
-    padding: 30px;
-    text-align: center;
-  }
-  h1 {
-    color: #fff;
-    text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de;
-    margin-bottom: 20px;
-    font-size: 2.5em;
-    animation: neonFlicker 1.5s infinite alternate;
-  }
-  @keyframes neonFlicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de, 0 0 40px #ff00de;
-    }
-    20%, 24%, 55% {       
-      text-shadow: none;
-    }
-  }
-  #tetris-canvas {
-    border: 3px solid #fff;
-    box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
-  }
-  #score {
-    font-size: 1.5em;
-    margin-top: 20px;
-    color: #fff;
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-  }
-  #start-button {
-    background-color: #ff00de;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 1em;
-    margin: 20px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-family: 'Press Start 2P', cursive;
-    transition: all 0.3s;
-    text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de;
-    box-shadow: 0 0 20px #ff00de;
-  }
-  #start-button:hover {
-    background-color: #00ffff;
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-    box-shadow: 0 0 20px #00ffff;
-  }
-  #controls {
-    color: #fff;
-    margin-top: 20px;
-    font-size: 0.8em;
-    text-shadow: 0 0 5px #00ffff;
-  }
-  #mobile-controls {
-    display: none;
-    margin-top: 20px;
-  }
-  .mobile-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 2px solid #fff;
-    color: #fff;
-    padding: 15px;
-    margin: 5px;
-    font-size: 1.2em;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .mobile-button:active {
-    background-color: rgba(255, 255, 255, 0.4);
-  }
-  @media (max-width: 600px) {
-    #mobile-controls {
-      display: block;
-    }
-    #controls {
-      display: none;
-    }
-    .game-container {
-      padding: 15px;
-    }
-    h1 {
-      font-size: 1.8em;
-    }
-  }
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<html><head><base href="https://websimstetris.com/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Ultra Moderno</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(45deg, #000000, #1a1a2e, #16213e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+        }
+        .game-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
+        .board-container {
+            position: relative;
+        }
+        #tetris-board {
+            width: 300px;
+            height: 600px;
+            border: 4px solid #e94560;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+        }
+        .tetromino {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 150px;
+        }
+        .info-box {
+            background: rgba(233, 69, 96, 0.2);
+            border: 2px solid #e94560;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+        #next-piece {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+        }
+        #score, #level, #lines {
+            font-size: 16px;
+            text-align: center;
+            margin: 5px 0;
+        }
+        #mobile-controls {
+            display: none;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            font-size: 24px;
+            background-color: #e94560;
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .control-btn:active {
+            background-color: #c81e45;
+            transform: scale(0.95);
+        }
+        #start-screen, #game-over-screen, #menu-overlay, #settings-overlay, #high-scores-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        #start-btn, #restart-btn, #resume-btn, #restart-menu-btn, #settings-btn, #high-scores-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #e94560;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #start-btn:hover, #restart-btn:hover, #resume-btn:hover, #restart-menu-btn:hover, #settings-btn:hover, #high-scores-btn:hover {
+            background-color: #c81e45;
+        }
+        #pause-btn, #menu-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #e94560;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        #pause-btn:hover, #menu-btn:hover {
+            background-color: #c81e45;
+        }
+        #settings-overlay, #high-scores-overlay {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+        }
+        .menu-content {
+            background: rgba(233, 69, 96, 0.2);
+            border: 4px solid #e94560;
+            border-radius: 10px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .menu-content h2 {
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        .menu-content button {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+            padding: 15px 30px;
+            margin: 10px 0;
+            background-color: #e94560;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 250px;
+        }
+        .menu-content button:hover {
+            background-color: #c81e45;
+        }
+        .language-selection, .color-theme-selection {
+            margin-bottom: 20px;
+        }
+        #language-select, #color-theme-select {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            padding: 5px;
+            margin-top: 10px;
+            background-color: #e94560;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            .side-panel {
+                width: 300px;
+                margin-top: 20px;
+            }
+            #mobile-controls {
+                display: flex;
+            }
+        }
+        @keyframes rainbow {
+            0% { color: red; }
+            14% { color: orange; }
+            28% { color: yellow; }
+            42% { color: green; }
+            57% { color: blue; }
+            71% { color: indigo; }
+            85% { color: violet; }
+            100% { color: red; }
+        }
+        .rainbow-text {
+            animation: rainbow 5s linear infinite;
+        }
+        @keyframes place-piece {
+            0% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes clear-line {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-<div class="game-container">
-  <h1>NEON TETRIS</h1>
-  <canvas id="tetris-canvas" width="240" height="400"></canvas>
-  <div id="score">Score: 0</div>
-  <button id="start-button">Start Game</button>
-  <div id="controls">
-    ← → : Move | ↑ : Rotate | ↓ : Soft Drop<br>
-    SPACE : Hard Drop
-  </div>
-  <div id="mobile-controls">
-    <button id="left-btn" class="mobile-button">←</button>
-    <button id="rotate-btn" class="mobile-button">↑</button>
-    <button id="right-btn" class="mobile-button">→</button>
-    <br>
-    <button id="down-btn" class="mobile-button">↓</button>
-    <button id="drop-btn" class="mobile-button">Drop</button>
-  </div>
-</div>
+    <div class="game-container">
+        <div class="board-container">
+            <div id="tetris-board"></div>
+            <div id="start-screen">
+                <h1 class="rainbow-text">TETRIS ULTRA</h1>
+                <button id="start-btn">INICIAR JUEGO</button>
+            </div>
+            <div id="game-over-screen" style="display: none;">
+                <h2>GAME OVER</h2>
+                <p>Puntuación final: <span id="final-score"></span></p>
+                <button id="restart-btn">JUGAR DE NUEVO</button>
+            </div>
+            <div id="menu-overlay">
+                <div class="menu-content">
+                    <h2 class="rainbow-text">MENU</h2>
+                    <button id="resume-btn">RESUME</button>
+                    <button id="restart-menu-btn">RESTART</button>
+                    <button id="settings-btn">SETTINGS</button>
+                    <button id="high-scores-btn">HIGH SCORES</button>
+                </div>
+            </div>
+            <div id="settings-overlay">
+                <div class="menu-content">
+                    <h2 class="rainbow-text">SETTINGS</h2>
+                    <div class="language-selection">
+                        <label for="language-select">Language / Idioma:</label>
+                        <select id="language-select">
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                        </select>
+                    </div>
+                    <div class="color-theme-selection">
+                        <label for="color-theme-select">Color Theme / Tema de Color:</label>
+                        <select id="color-theme-select">
+                            <option value="classic">Classic / Clásico</option>
+                            <option value="neon">Neon / Neón</option>
+                            <option value="pastel">Pastel / Pastel</option>
+                        </select>
+                    </div>
+                    <button id="close-settings-btn">CLOSE</button>
+                </div>
+            </div>
+            <div id="high-scores-overlay" style="display: none;">
+                <div class="menu-content">
+                    <h2 class="rainbow-text">HIGH SCORES</h2>
+                    <div id="high-scores-list"></div>
+                    <button id="close-high-scores-btn">CLOSE</button>
+                </div>
+            </div>
+        </div>
+        <div class="side-panel">
+            <div class="info-box">
+                <h3>SIGUIENTE</h3>
+                <div id="next-piece"></div>
+            </div>
+            <div class="info-box">
+                <p id="score">Puntos: 0</p>
+                <p id="level">Nivel: 1</p>
+                <p id="lines">Líneas: 0</p>
+            </div>
+            <button id="pause-btn">PAUSA</button>
+            <button id="menu-btn">MENU</button>
+        </div>
+        <div id="mobile-controls">
+            <button class="control-btn" id="left-btn">←</button>
+            <button class="control-btn" id="rotate-btn">↻</button>
+            <button class="control-btn" id="right-btn">→</button>
+            <button class="control-btn" id="down-btn">↓</button>
+            <button class="control-btn" id="drop-btn">⇓</button>
+        </div>
+    </div>
 
-<script>
-const canvas = document.getElementById('tetris-canvas');
-const context = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const startButton = document.getElementById('start-button');
+    <audio id="move-sound" src=""></audio>
+    <audio id="rotate-sound" src=""></audio>
+    <audio id="drop-sound" src=""></audio>
+    <audio id="clear-sound" src=""></audio>
 
-const ROWS = 20;
-const COLS = 12;
-const BLOCK_SIZE = 20;
+    <script>
+        const tetrominoes = [
+            [[1, 1, 1, 1]],  // I
+            [[1, 1], [1, 1]],  // O
+            [[1, 1, 1], [0, 1, 0]],  // T
+            [[1, 1, 1], [1, 0, 0]],  // L
+            [[1, 1, 1], [0, 0, 1]],  // J
+            [[1, 1, 0], [0, 1, 1]],  // S
+            [[0, 1, 1], [1, 1, 0]]   // Z
+        ];
+        
+        const board = document.getElementById('tetris-board');
+        const nextPieceDisplay = document.getElementById('next-piece');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const linesElement = document.getElementById('lines');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const finalScoreElement = document.getElementById('final-score');
+        const pauseBtn = document.getElementById('pause-btn');
+        const menuBtn = document.getElementById('menu-btn');
+        const menuOverlay = document.getElementById('menu-overlay');
+        const resumeBtn = document.getElementById('resume-btn');
+        const restartMenuBtn = document.getElementById('restart-menu-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const highScoresBtn = document.getElementById('high-scores-btn');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        const languageSelect = document.getElementById('language-select');
+        const closeSettingsBtn = document.getElementById('close-settings-btn');
 
-let score = 0;
-let board = [];
-let currentPiece;
-let gameInterval;
+        const colorThemes = {
+            classic: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', '#FFA500'],
+            neon: ['#FF00FF', '#00FFFF', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FFA500'],
+            pastel: ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA', '#E0BBE4', '#FFDAB9']
+        };
 
-const SHAPES = [
-  [[1,1,1,1]],
-  [[1,1],[1,1]],
-  [[1,1,1],[0,1,0]],
-  [[1,1,1],[1,0,0]],
-  [[1,1,1],[0,0,1]],
-  [[1,1,0],[0,1,1]],
-  [[0,1,1],[1,1,0]]
-];
+        let currentTheme = 'classic';
+        let score = 0;
+        let level = 1;
+        let lines = 0;
+        let grid = Array(20).fill().map(() => Array(10).fill(0));
+        let currentPiece = null;
+        let nextPiece = null;
+        let currentPosition = {x: 0, y: 0};
+        let gameInterval;
+        let gameSpeed = 1000;
+        let isGameOver = false;
+        let isPaused = false;
+        let currentLanguage = 'en';
+        const languages = {
+            en: {
+                start: "START GAME",
+                gameOver: "GAME OVER",
+                finalScore: "Final Score:",
+                playAgain: "PLAY AGAIN",
+                next: "NEXT",
+                score: "Score:",
+                level: "Level:",
+                lines: "Lines:",
+                pause: "PAUSE",
+                resume: "RESUME",
+                menu: "MENU",
+                settings: "SETTINGS",
+                highScores: "HIGH SCORES",
+                close: "CLOSE",
+                colorTheme: "Color Theme:"
+            },
+            es: {
+                start: "INICIAR JUEGO",
+                gameOver: "FIN DEL JUEGO",
+                finalScore: "Puntuación final:",
+                playAgain: "JUGAR DE NUEVO",
+                next: "SIGUIENTE",
+                score: "Puntos:",
+                level: "Nivel:",
+                lines: "Líneas:",
+                pause: "PAUSA",
+                resume: "REANUDAR",
+                menu: "MENÚ",
+                settings: "AJUSTES",
+                highScores: "PUNTUACIONES ALTAS",
+                close: "CERRAR",
+                colorTheme: "Tema de Color:"
+            }
+        };
 
-const COLORS = [
-  '#ff00ff',
-  '#00ffff',
-  '#ffff00',
-  '#ff8000',
-  '#0080ff',
-  '#00ff80',
-  '#ff0080'
-];
+        function createBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < 200; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('tetromino');
+                board.appendChild(cell);
+            }
+        }
 
-// PC Speaker Sound Effects
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function drawBoard() {
+            const cells = board.getElementsByClassName('tetromino');
+            for (let y = 0; y < 20; y++) {
+                for (let x = 0; x < 10; x++) {
+                    const index = y * 10 + x;
+                    cells[index].style.backgroundColor = grid[y][x] ? colorThemes[currentTheme][grid[y][x] - 1] : 'transparent';
+                    cells[index].style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                }
+            }
+            
+            const ghostPosition = calculateGhostPosition();
+            for (let row = 0; row < currentPiece.shape.length; row++) {
+                for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                    if (currentPiece.shape[row][col]) {
+                        const y = ghostPosition.y + row;
+                        const x = ghostPosition.x + col;
+                        if (y >= 0 && y < 20 && x >= 0 && x < 10) {
+                            const index = y * 10 + x;
+                            cells[index].style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                            cells[index].style.border = '1px solid rgba(255, 255, 255, 0.5)';
+                        }
+                    }
+                }
+            }
 
-function playTone(frequency, duration) {
-  const oscillator = audioContext.createOscillator();
-  oscillator.type = 'square';
-  oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-  
-  const gainNode = audioContext.createGain();
-  gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+            if (currentPiece) {
+                for (let row = 0; row < currentPiece.shape.length; row++) {
+                    for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                        if (currentPiece.shape[row][col]) {
+                            const y = currentPosition.y + row;
+                            const x = currentPosition.x + col;
+                            if (y >= 0 && y < 20 && x >= 0 && x < 10) {
+                                const index = y * 10 + x;
+                                cells[index].style.backgroundColor = colorThemes[currentTheme][currentPiece.color - 1];
+                                cells[index].style.border = '1px solid rgba(255, 255, 255, 0.5)';
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + duration);
-}
+        function calculateGhostPosition() {
+            let ghostY = currentPosition.y;
+            while (canMoveTo(currentPosition.x, ghostY + 1, currentPiece.shape)) {
+                ghostY++;
+            }
+            return { x: currentPosition.x, y: ghostY };
+        }
 
-function playMoveSound() {
-  playTone(220, 0.05);
-}
+        function drawNextPiece() {
+            nextPieceDisplay.innerHTML = '';
+            for (let row = 0; row < nextPiece.shape.length; row++) {
+                for (let col = 0; col < nextPiece.shape[row].length; col++) {
+                    const cell = document.createElement('div');
+                    cell.style.width = '25px';
+                    cell.style.height = '25px';
+                    cell.style.backgroundColor = nextPiece.shape[row][col] ? colorThemes[currentTheme][nextPiece.color - 1] : 'transparent';
+                    cell.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    nextPieceDisplay.appendChild(cell);
+                }
+            }
+        }
 
-function playRotateSound() {
-  playTone(440, 0.05);
-}
+        function createNewPiece() {
+            if (!nextPiece) {
+                const randomIndex = Math.floor(Math.random() * tetrominoes.length);
+                nextPiece = {
+                    shape: tetrominoes[randomIndex],
+                    color: randomIndex + 1
+                };
+            }
+            currentPiece = nextPiece;
+            currentPosition = {x: Math.floor((10 - currentPiece.shape[0].length) / 2), y: 0};
+            const randomIndex = Math.floor(Math.random() * tetrominoes.length);
+            nextPiece = {
+                shape: tetrominoes[randomIndex],
+                color: randomIndex + 1
+            };
+            drawNextPiece();
+            drawBoard();
+            if (!canMoveTo(currentPosition.x, currentPosition.y, currentPiece.shape)) {
+                gameOver();
+            }
+        }
 
-function playLockSound() {
-  playTone(330, 0.1);
-}
+        function canMoveTo(x, y, shape) {
+            for (let row = 0; row < shape.length; row++) {
+                for (let col = 0; col < shape[row].length; col++) {
+                    if (shape[row][col]) {
+                        const newX = x + col;
+                        const newY = y + row;
+                        if (newX < 0 || newX >= 10 || newY >= 20 || (newY >= 0 && grid[newY][newX])) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
 
-function playClearSound() {
-  playTone(660, 0.15);
-}
+        function placePiece() {
+            for (let row = 0; row < currentPiece.shape.length; row++) {
+                for (let col = 0; col < currentPiece.shape[row].length; col++) {
+                    if (currentPiece.shape[row][col]) {
+                        const newY = currentPosition.y + row;
+                        const newX = currentPosition.x + col;
+                        if (newY >= 0) {
+                            grid[newY][newX] = currentPiece.color;
+                            const cell = board.children[newY * 10 + newX];
+                            cell.style.animation = 'place-piece 0.1s';
+                        }
+                    }
+                }
+            }
+            checkLines();
+            createNewPiece();
+        }
 
-function playHardDropSound() {
-  playTone(880, 0.1);
-}
+        function moveDown() {
+            if (!currentPiece) {
+                createNewPiece();
+                return;
+            }
+            if (canMoveTo(currentPosition.x, currentPosition.y + 1, currentPiece.shape)) {
+                currentPosition.y++;
+            } else {
+                placePiece();
+            }
+            drawBoard();
+        }
 
-function playGameOverSound() {
-  playTone(110, 0.3);
-  setTimeout(() => playTone(82.41, 0.3), 300);
-}
+        function moveLeft() {
+            if (canMoveTo(currentPosition.x - 1, currentPosition.y, currentPiece.shape)) {
+                currentPosition.x--;
+                drawBoard();
+            }
+        }
 
-function initBoard() {
-  for (let r = 0; r < ROWS; r++) {
-    board[r] = [];
-    for (let c = 0; c < COLS; c++) {
-      board[r][c] = 0;
-    }
-  }
-}
+        function moveRight() {
+            if (canMoveTo(currentPosition.x + 1, currentPosition.y, currentPiece.shape)) {
+                currentPosition.x++;
+                drawBoard();
+            }
+        }
 
-function drawBlock(x, y, color) {
-  context.fillStyle = color;
-  context.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  context.strokeStyle = "#fff";
-  context.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  
-  // Add neon glow effect
-  context.shadowBlur = 10;
-  context.shadowColor = color;
-  context.fillRect(x * BLOCK_SIZE + 2, y * BLOCK_SIZE + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
-  context.shadowBlur = 0;
-}
+        function rotate() {
+            const rotated = currentPiece.shape[0].map((_, index) =>
+                currentPiece.shape.map(row => row[index]).reverse()
+            );
+            if (canMoveTo(currentPosition.x, currentPosition.y, rotated)) {
+                currentPiece.shape = rotated;
+                drawBoard();
+            }
+        }
 
-function drawBoard() {
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (board[r][c]) {
-        drawBlock(c, r, COLORS[board[r][c] - 1]);
-      }
-    }
-  }
-}
+        function dropPiece() {
+            while (canMoveTo(currentPosition.x, currentPosition.y + 1, currentPiece.shape)) {
+                currentPosition.y++;
+            }
+            placePiece();
+            drawBoard();
+        }
 
-function createPiece() {
-  let pieceIndex = Math.floor(Math.random() * SHAPES.length);
-  let piece = SHAPES[pieceIndex];
-  return {
-    shape: piece,
-    color: COLORS[pieceIndex],
-    x: Math.floor(COLS / 2) - Math.ceil(piece[0].length / 2),
-    y: 0
-  };
-}
+        function checkLines() {
+            let linesCleared = 0;
+            for (let row = 19; row >= 0; row--) {
+                if (grid[row].every(cell => cell !== 0)) {
+                    for (let col = 0; col < 10; col++) {
+                        const cell = board.children[row * 10 + col];
+                        cell.style.animation = 'clear-line 0.5s';
+                    }
+                    setTimeout(() => {
+                        grid.splice(row, 1);
+                        grid.unshift(Array(10).fill(0));
+                        drawBoard();
+                    }, 500);
+                    linesCleared++;
+                }
+            }
+            if (linesCleared > 0) {
+                score += linesCleared * 100 * level;
+                lines += linesCleared;
+                level = Math.floor(lines / 10) + 1;
+                gameSpeed = Math.max(100, 1000 - (level - 1) * 100);
+                clearInterval(gameInterval);
+                gameInterval = setInterval(moveDown, gameSpeed);
+                scoreElement.textContent = `Puntos: ${score}`;
+                levelElement.textContent = `Nivel: ${level}`;
+                linesElement.textContent = `Líneas: ${lines}`;
+            }
+        }
 
-function getGhostPiecePosition() {
-  let ghostPiece = {...currentPiece};
-  while (!collision(0, 1, ghostPiece)) {
-    ghostPiece.y++;
-  }
-  return ghostPiece;
-}
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            gameOverScreen.style.display = 'flex';
+            finalScoreElement.textContent = score;
+            
+            const highScores = JSON.parse(localStorage.getItem('tetrisHighScores')) || [];
+            if (highScores.length < 10 || score > highScores[highScores.length - 1].score) {
+                saveHighScore(score);
+            }
+        }
 
-function drawPiece() {
-  // Draw ghost piece
-  let ghostPiece = getGhostPiecePosition();
-  context.globalAlpha = 0.3;
-  for (let r = 0; r < ghostPiece.shape.length; r++) {
-    for (let c = 0; c < ghostPiece.shape[r].length; c++) {
-      if (ghostPiece.shape[r][c]) {
-        drawBlock(ghostPiece.x + c, ghostPiece.y + r, ghostPiece.color);
-      }
-    }
-  }
-  context.globalAlpha = 1;
+        function togglePause() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                clearInterval(gameInterval);
+                pauseBtn.textContent = languages[currentLanguage].resume;
+                menuBtn.textContent = languages[currentLanguage].menu;
+            } else {
+                gameInterval = setInterval(gameLoop, gameSpeed);
+                pauseBtn.textContent = languages[currentLanguage].pause;
+                menuBtn.textContent = languages[currentLanguage].menu;
+            }
+        }
 
-  // Draw current piece
-  for (let r = 0; r < currentPiece.shape.length; r++) {
-    for (let c = 0; c < currentPiece.shape[r].length; c++) {
-      if (currentPiece.shape[r][c]) {
-        drawBlock(currentPiece.x + c, currentPiece.y + r, currentPiece.color);
-      }
-    }
-  }
-}
+        function showMenu() {
+            menuOverlay.style.display = 'flex';
+            isPaused = true;
+            clearInterval(gameInterval);
+        }
 
-function moveDown() {
-  if (!collision(0, 1)) {
-    currentPiece.y++;
-    playMoveSound();
-  } else {
-    lockPiece();
-    clearLines();
-    currentPiece = createPiece();
-    if (collision(0, 0)) {
-      gameOver();
-    }
-  }
-}
+        function hideMenu() {
+            menuOverlay.style.display = 'none';
+            isPaused = false;
+            if (!isGameOver) {
+                gameInterval = setInterval(gameLoop, gameSpeed);
+            }
+        }
 
-function moveLeft() {
-  if (!collision(-1, 0)) {
-    currentPiece.x--;
-    playMoveSound();
-  }
-}
+        function showSettings() {
+            settingsOverlay.style.display = 'flex';
+        }
 
-function moveRight() {
-  if (!collision(1, 0)) {
-    currentPiece.x++;
-    playMoveSound();
-  }
-}
+        function hideSettings() {
+            settingsOverlay.style.display = 'none';
+        }
 
-function rotate() {
-  let newShape = [];
-  for (let c = 0; c < currentPiece.shape[0].length; c++) {
-    newShape.push([]);
-    for (let r = currentPiece.shape.length - 1; r >= 0; r--) {
-      newShape[c].push(currentPiece.shape[r][c]);
-    }
-  }
-  
-  let previousShape = currentPiece.shape;
-  currentPiece.shape = newShape;
-  
-  if (collision(0, 0)) {
-    currentPiece.shape = previousShape;
-  } else {
-    playRotateSound();
-  }
-}
+        function showHighScores() {
+            const highScoresOverlay = document.getElementById('high-scores-overlay');
+            const highScoresList = document.getElementById('high-scores-list');
+            highScoresOverlay.style.display = 'flex';
+            
+            const highScores = JSON.parse(localStorage.getItem('tetrisHighScores')) || [];
+            highScoresList.innerHTML = highScores.map((score, index) => 
+                `<p>${index + 1}. ${score.name}: ${score.score}</p>`
+            ).join('');
+            
+            if (highScores.length === 0) {
+                highScoresList.innerHTML = '<p>No high scores yet!</p>';
+            }
+        }
 
-function hardDrop() {
-  let dropDistance = 0;
-  while (!collision(0, dropDistance + 1)) {
-    dropDistance++;
-  }
-  currentPiece.y += dropDistance;
-  lockPiece();
-  clearLines();
-  currentPiece = createPiece();
-  if (collision(0, 0)) {
-    gameOver();
-  }
-  playHardDropSound();
-}
+        function closeHighScores() {
+            const highScoresOverlay = document.getElementById('high-scores-overlay');
+            highScoresOverlay.style.display = 'none';
+        }
 
-function collision(x, y, piece = currentPiece) {
-  for (let r = 0; r < piece.shape.length; r++) {
-    for (let c = 0; c < piece.shape[r].length; c++) {
-      if (!piece.shape[r][c]) {
-        continue;
-      }
-      let newX = piece.x + c + x;
-      let newY = piece.y + r + y;
-      if (newX < 0 || newX >= COLS || newY >= ROWS) {
-        return true;
-      }
-      if (newY < 0) {
-        continue;
-      }
-      if (board[newY][newX]) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
+        function saveHighScore(score) {
+            const highScores = JSON.parse(localStorage.getItem('tetrisHighScores')) || [];
+            const name = prompt('You got a high score! Enter your name:');
+            highScores.push({ name, score });
+            highScores.sort((a, b) => b.score - a.score);
+            highScores.splice(10);
+            localStorage.setItem('tetrisHighScores', JSON.stringify(highScores));
+        }
 
-function lockPiece() {
-  for (let r = 0; r < currentPiece.shape.length; r++) {
-    for (let c = 0; c < currentPiece.shape[r].length; c++) {
-      if (currentPiece.shape[r][c]) {
-        let pieceColor = COLORS.indexOf(currentPiece.color) + 1;
-        board[currentPiece.y + r][currentPiece.x + c] = pieceColor;
-      }
-    }
-  }
-  playLockSound();
-}
+        function changeColorTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('tetrisColorTheme', theme);
+            drawBoard();
+            drawNextPiece();
+        }
 
-function clearLines() {
-  let linesToClear = [];
-  for (let r = ROWS - 1; r >= 0; r--) {
-    if (board[r].every(cell => cell !== 0)) {
-      linesToClear.push(r);
-    }
-  }
-  
-  if (linesToClear.length > 0) {
-    playClearSound();
-    animateClearLines(linesToClear);
-  }
-}
+        const savedTheme = localStorage.getItem('tetrisColorTheme');
+        if (savedTheme) {
+            currentTheme = savedTheme;
+            document.getElementById('color-theme-select').value = savedTheme;
+        }
 
-function animateClearLines(lines) {
-  let animationFrames = 5;
-  let frameCount = 0;
+        document.getElementById('color-theme-select').addEventListener('change', (e) => {
+            changeColorTheme(e.target.value);
+        });
 
-  function animate() {
-    if (frameCount >= animationFrames) {
-      // Animation complete, remove lines and update score
-      lines.forEach(line => {
-        board.splice(line, 1);
-        board.unshift(Array(COLS).fill(0));
-      });
-      score += lines.length * 100;
-      scoreElement.textContent = `Score: ${score}`;
-      return;
-    }
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updateTexts();
+        }
 
-    // Draw flashing effect
-    lines.forEach(line => {
-      const color = frameCount % 2 === 0 ? '#ffffff' : '#000000';
-      context.fillStyle = color;
-      context.fillRect(0, line * BLOCK_SIZE, canvas.width, BLOCK_SIZE);
-    });
+        function updateTexts() {
+            document.getElementById('start-btn').textContent = languages[currentLanguage].start;
+            document.querySelector('#game-over-screen h2').textContent = languages[currentLanguage].gameOver;
+            document.querySelector('#game-over-screen p').textContent = `${languages[currentLanguage].finalScore} `;
+            document.getElementById('restart-btn').textContent = languages[currentLanguage].playAgain;
+            document.querySelector('.info-box h3').textContent = languages[currentLanguage].next;
+            scoreElement.textContent = `${languages[currentLanguage].score} ${score}`;
+            levelElement.textContent = `${languages[currentLanguage].level} ${level}`;
+            linesElement.textContent = `${languages[currentLanguage].lines} ${lines}`;
+            pauseBtn.textContent = isPaused ? languages[currentLanguage].resume : languages[currentLanguage].pause;
+            menuBtn.textContent = languages[currentLanguage].menu;
+            resumeBtn.textContent = languages[currentLanguage].resume;
+            restartMenuBtn.textContent = languages[currentLanguage].playAgain;
+            settingsBtn.textContent = languages[currentLanguage].settings;
+            highScoresBtn.textContent = languages[currentLanguage].highScores;
+            document.querySelector('#high-scores-overlay h2').textContent = languages[currentLanguage].highScores;
+            document.getElementById('close-high-scores-btn').textContent = languages[currentLanguage].close;
+            document.querySelector('.color-theme-selection label').textContent = languages[currentLanguage].colorTheme;
+        }
 
-    frameCount++;
-    requestAnimationFrame(animate);
-  }
+        function gameLoop() {
+            if (!isPaused && !isGameOver) {
+                if (!currentPiece) {
+                    createNewPiece();
+                }
+                moveDown();
+            }
+        }
 
-  animate();
-}
+        function handleKeyPress(event) {
+            if (isGameOver) return;
+            switch(event.keyCode) {
+                case 37: moveLeft(); break;
+                case 39: moveRight(); break;
+                case 40: moveDown(); break;
+                case 38: rotate(); break;
+                case 32: dropPiece(); break;
+                case 80: togglePause(); break;
+                case 27: showMenu(); break;
+            }
+        }
 
-function gameOver() {
-  clearInterval(gameInterval);
-  context.fillStyle = "rgba(0, 0, 0, 0.7)";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#ff00de";
-  context.font = "20px 'Press Start 2P'";
-  context.textAlign = "center";
-  context.fillText("Game Over", canvas.width / 2, canvas.height / 2);
-  context.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 40);
-  startButton.style.display = "inline-block";
-  playGameOverSound();
-}
+        document.addEventListener('keydown', handleKeyPress);
+        document.getElementById('left-btn').addEventListener('click', moveLeft);
+        document.getElementById('right-btn').addEventListener('click', moveRight);
+        document.getElementById('down-btn').addEventListener('click', moveDown);
+        document.getElementById('rotate-btn').addEventListener('click', rotate);
+        document.getElementById('drop-btn').addEventListener('click', dropPiece);
+        pauseBtn.addEventListener('click', togglePause);
+        menuBtn.addEventListener('click', showMenu);
+        resumeBtn.addEventListener('click', hideMenu);
+        restartMenuBtn.addEventListener('click', () => {
+            hideMenu();
+            startGame();
+        });
+        settingsBtn.addEventListener('click', showSettings);
+        highScoresBtn.addEventListener('click', showHighScores);
+        document.getElementById('close-high-scores-btn').addEventListener('click', closeHighScores);
+        languageSelect.addEventListener('change', (e) => {
+            changeLanguage(e.target.value);
+        });
+        closeSettingsBtn.addEventListener('click', hideSettings);
 
-function gameLoop() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  drawBoard();
-  drawPiece();
-  drawScanlines();
-}
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound && sound.play) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio playback failed:", e));
+            }
+        }
 
-function startGame() {
-  initBoard();
-  score = 0;
-  scoreElement.textContent = "Score: 0";
-  currentPiece = createPiece();
-  startButton.style.display = "none";
-  if (gameInterval) {
-    clearInterval(gameInterval);
-  }
-  gameInterval = setInterval(() => {
-    moveDown();
-    gameLoop();
-  }, 500);
-}
+        function startGame() {
+            isGameOver = false;
+            score = 0;
+            level = 1;
+            lines = 0;
+            grid = Array(20).fill().map(() => Array(10).fill(0));
+            gameSpeed = 1000;
+            scoreElement.textContent = 'Puntos: 0';
+            levelElement.textContent = 'Nivel: 1';
+            linesElement.textContent = 'Líneas: 0';
+            createBoard();
+            currentPiece = null;
+            nextPiece = null;
+            createNewPiece();
+            drawBoard();
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            isPaused = false;
+            pauseBtn.textContent = 'PAUSA';
+            clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, gameSpeed);
+        }
 
-document.addEventListener('keydown', event => {
-  switch(event.keyCode) {
-    case 37: // Left arrow
-      moveLeft();
-      break;
-    case 39: // Right arrow
-      moveRight();
-      break;
-    case 40: // Down arrow
-      moveDown();
-      break;
-    case 38: // Up arrow
-      rotate();
-      break;
-    case 32: // Space bar
-      hardDrop();
-      break;
-  }
-  gameLoop();
-});
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
 
-startButton.addEventListener('click', startGame);
-
-// Add some retro scanlines effect
-function drawScanlines() {
-  context.fillStyle = "rgba(255,255,255,0.1)";
-  for(let i = 0; i < canvas.height; i += 4) {
-    context.fillRect(0, i, canvas.width, 2);
-  }
-}
-
-// Mobile controls
-document.getElementById('left-btn').addEventListener('click', () => {
-  moveLeft();
-  gameLoop();
-});
-
-document.getElementById('right-btn').addEventListener('click', () => {
-  moveRight();
-  gameLoop();
-});
-
-document.getElementById('down-btn').addEventListener('click', () => {
-  moveDown();
-  gameLoop();
-});
-
-document.getElementById('rotate-btn').addEventListener('click', () => {
-  rotate();
-  gameLoop();
-});
-
-document.getElementById('drop-btn').addEventListener('click', () => {
-  hardDrop();
-  gameLoop();
-});
-
-// Prevent default touch behavior
-document.addEventListener('touchmove', function(event) {
-  event.preventDefault();
-}, { passive: false });
-
-</script>
+        createBoard();
+        updateTexts();
+    </script>
 </body></html>
