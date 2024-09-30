@@ -7,7 +7,7 @@
 
         body {
             margin: 0;
-            padding: 0;
+            padding: 0 0 40px;
             font-family: 'Press Start 2P', cursive;
             background: linear-gradient(45deg, #000000, #1a1a2e, #16213e);
             display: flex;
@@ -93,7 +93,7 @@
             background-color: #c81e45;
             transform: scale(0.95);
         }
-        #start-screen, #game-over-screen, #menu-overlay, #settings-overlay, #high-scores-overlay {
+        #start-screen, #game-over-screen, #menu-overlay, #settings-overlay, #high-scores-overlay, #how-to-play-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -106,7 +106,7 @@
             align-items: center;
             z-index: 10;
         }
-        #start-btn, #restart-btn, #resume-btn, #restart-menu-btn, #settings-btn, #high-scores-btn {
+        #start-btn, #restart-btn, #resume-btn, #restart-menu-btn, #settings-btn, #high-scores-btn, #how-to-play-btn {
             font-family: 'Press Start 2P', cursive;
             font-size: 18px;
             padding: 10px 20px;
@@ -117,7 +117,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        #start-btn:hover, #restart-btn:hover, #resume-btn:hover, #restart-menu-btn:hover, #settings-btn:hover, #high-scores-btn:hover {
+        #start-btn:hover, #restart-btn:hover, #resume-btn:hover, #restart-menu-btn:hover, #settings-btn:hover, #high-scores-btn:hover, #how-to-play-btn:hover {
             background-color: #c81e45;
         }
         #pause-btn, #menu-btn {
@@ -135,7 +135,7 @@
         #pause-btn:hover, #menu-btn:hover {
             background-color: #c81e45;
         }
-        #settings-overlay, #high-scores-overlay {
+        #settings-overlay, #high-scores-overlay, #how-to-play-overlay {
             display: none;
             justify-content: center;
             align-items: center;
@@ -182,6 +182,14 @@
             color: #fff;
             cursor: pointer;
         }
+        #how-to-play-content {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        #how-to-play-content p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
         @media (max-width: 768px) {
             .game-container {
                 flex-direction: column;
@@ -216,6 +224,18 @@
             50% { transform: scale(1.1); opacity: 0.5; }
             100% { transform: scale(1); opacity: 1; }
         }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #e94560;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -238,6 +258,7 @@
                     <button id="restart-menu-btn">RESTART</button>
                     <button id="settings-btn">SETTINGS</button>
                     <button id="high-scores-btn">HIGH SCORES</button>
+                    <button id="how-to-play-btn">HOW TO PLAY</button>
                 </div>
             </div>
             <div id="settings-overlay">
@@ -266,6 +287,21 @@
                     <h2 class="rainbow-text">HIGH SCORES</h2>
                     <div id="high-scores-list"></div>
                     <button id="close-high-scores-btn">CLOSE</button>
+                </div>
+            </div>
+            <div id="how-to-play-overlay" style="display: none;">
+                <div class="menu-content">
+                    <h2 class="rainbow-text">HOW TO PLAY</h2>
+                    <div id="how-to-play-content">
+                        <p>Move pieces: ← →</p>
+                        <p>Rotate: ↑</p>
+                        <p>Soft drop: ↓</p>
+                        <p>Hard drop: Space</p>
+                        <p>Pause: P</p>
+                        <p>Clear lines to score points!</p>
+                        <p>Level up every 10 lines!</p>
+                    </div>
+                    <button id="close-how-to-play-btn">CLOSE</button>
                 </div>
             </div>
         </div>
@@ -363,7 +399,14 @@
                 settings: "SETTINGS",
                 highScores: "HIGH SCORES",
                 close: "CLOSE",
-                colorTheme: "Color Theme:"
+                howToPlay: "HOW TO PLAY",
+                move: "Move pieces: ← →",
+                rotate: "Rotate: ↑",
+                softDrop: "Soft drop: ↓",
+                hardDrop: "Hard drop: Space",
+                pauseText: "Pause: P",
+                clearLines: "Clear lines to score points!",
+                levelUp: "Level up every 10 lines!"
             },
             es: {
                 start: "INICIAR JUEGO",
@@ -380,7 +423,14 @@
                 settings: "AJUSTES",
                 highScores: "PUNTUACIONES ALTAS",
                 close: "CERRAR",
-                colorTheme: "Tema de Color:"
+                howToPlay: "CÓMO JUGAR",
+                move: "Mover piezas: ← →",
+                rotate: "Rotar: ↑",
+                softDrop: "Caída suave: ↓",
+                hardDrop: "Caída rápida: Espacio",
+                pauseText: "Pausa: P",
+                clearLines: "¡Limpia líneas para ganar puntos!",
+                levelUp: "¡Sube de nivel cada 10 líneas!"
             }
         };
 
@@ -701,7 +751,19 @@
             highScoresBtn.textContent = languages[currentLanguage].highScores;
             document.querySelector('#high-scores-overlay h2').textContent = languages[currentLanguage].highScores;
             document.getElementById('close-high-scores-btn').textContent = languages[currentLanguage].close;
-            document.querySelector('.color-theme-selection label').textContent = languages[currentLanguage].colorTheme;
+            document.getElementById('how-to-play-btn').textContent = languages[currentLanguage].howToPlay;
+            document.querySelector('#how-to-play-overlay h2').textContent = languages[currentLanguage].howToPlay;
+            const howToPlayContent = document.getElementById('how-to-play-content');
+            howToPlayContent.innerHTML = `
+                <p>${languages[currentLanguage].move}</p>
+                <p>${languages[currentLanguage].rotate}</p>
+                <p>${languages[currentLanguage].softDrop}</p>
+                <p>${languages[currentLanguage].hardDrop}</p>
+                <p>${languages[currentLanguage].pauseText}</p>
+                <p>${languages[currentLanguage].clearLines}</p>
+                <p>${languages[currentLanguage].levelUp}</p>
+            `;
+            document.getElementById('close-how-to-play-btn').textContent = languages[currentLanguage].close;
         }
 
         function gameLoop() {
@@ -746,6 +808,17 @@
             changeLanguage(e.target.value);
         });
         closeSettingsBtn.addEventListener('click', hideSettings);
+        
+        function showHowToPlay() {
+            document.getElementById('how-to-play-overlay').style.display = 'flex';
+        }
+        
+        function hideHowToPlay() {
+            document.getElementById('how-to-play-overlay').style.display = 'none';
+        }
+
+        document.getElementById('how-to-play-btn').addEventListener('click', showHowToPlay);
+        document.getElementById('close-how-to-play-btn').addEventListener('click', hideHowToPlay);
 
         function playSound(soundId) {
             const sound = document.getElementById(soundId);
@@ -784,4 +857,7 @@
         createBoard();
         updateTexts();
     </script>
+    <footer>
+        <p>T3tris ® & © ~2024 T3tris. Desarrollado por VikinMex</p>
+    </footer>
 </body></html>
